@@ -7,6 +7,8 @@
 WatchyRTC TimeService::RTC;
 
 tmElements_t TimeService::get_time_formatted() {
+    RTC.init();
+
     tmElements_t current_time;
     RTC.read(current_time);
     return current_time;
