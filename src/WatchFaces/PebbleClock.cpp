@@ -3,8 +3,9 @@
 //
 
 #include "WatchFaces/PebbleClock.h"
-#include "bitmaps/backgrounds/pebbleBackground.h"
+#include "bitmaps/pebble.h"
 #include "Fonts/FreeMonoBold24pt7b.h"
+#include "Fonts/FreeMonoBold18pt7b.h"
 
 void PebbleClock::draw(Display display) {
     TimeService* time_service = ServiceManager::getInstance()->time_service;
@@ -14,10 +15,30 @@ void PebbleClock::draw(Display display) {
     display.setFullWindow();
     display.fillScreen(GxEPD_BLACK);
     display.drawBitmap(0,0,epd_bitmap_pebbleBackground,200,200,GxEPD_WHITE);
+    display.drawBitmap(25,10,epd_bitmap_PebbleCal,50,50,GxEPD_BLACK);
+    display.drawBitmap(125,10,epd_bitmap_PebbleStep,50,50,GxEPD_BLACK);
 
     display.setFont(&FreeMonoBold24pt7b);
     display.setTextColor(GxEPD_BLACK);
+    // TIME
     display.setCursor(28, 158);
-    display.printf("%02d:%02d\n", current_time.Hour, current_time.Minute);
+    display.printf("%02d:%02d", current_time.Hour, current_time.Minute);
+
+    display.setFont(&FreeMonoBold18pt7b);
+    // DATE
+    uint8_t current_day = current_time.Day;
+    int16_t day_x_pos = 40;
+    display.setCursor(day_x_pos, 50);
+    display.printf("%d", current_time.Day);
+
+    char* weekdays[] = {"SO", "MO", "DI", "MI", "DO", "FR", "SA"};
+    display.setCursor(30, 90);
+    display.printf("%s", weekdays[current_time.Wday - 1]);
+
+    // STEPS
+    uint16_t steps = 0;
+    display.setCursor(105, 90);
+    display.printf("%04d", steps);
+
     display.display(false);
 }
