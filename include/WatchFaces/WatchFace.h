@@ -6,6 +6,7 @@
 #define MINTY_OS_WATCHFACE_H
 
 #include "hal/hal.h"
+#include "ServiceManager.h"
 
 class WatchFace {
 private:
