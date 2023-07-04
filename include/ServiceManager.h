@@ -10,7 +10,10 @@
 
 class ServiceManager {
 public:
-    static void init();
+    static void init() {
+        TimeService::init();
+        StepService::init();
+    }
 };
 
 
