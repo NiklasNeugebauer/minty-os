@@ -14,10 +14,11 @@ class MintyBase {
 public:
     static WatchyRTC RTC;
     static WATCHY_DISPLAY display;
+    static void displayBusyCallback(const void *);
 
     void deepSleep();
     void wakeupRoutine();
-    void displayBusyCallback(const void *);
+    void reboot();
 };
 
 

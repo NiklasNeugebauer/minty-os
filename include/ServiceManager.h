@@ -8,16 +8,8 @@
 #include "services/TimeService.h"
 
 class ServiceManager {
-private:
-    static ServiceManager* instance;
 public:
-    TimeService* time_service;
-
-    static ServiceManager* getInstance();
-    static void resetInstance();
-
-    ServiceManager();
-    ~ServiceManager();
+    static void init();
 };
 
 

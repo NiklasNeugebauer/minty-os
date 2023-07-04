@@ -5,9 +5,10 @@
 #include "WatchFaces/BasicTime.h"
 #include <Fonts/FreeMonoBold9pt7b.h>
 
+#include "services/TimeService.h"
+
 void BasicTime::draw(Display display) {
-    TimeService* time_service = ServiceManager::getInstance()->time_service;
-    tmElements_t current_time = time_service->get_time_formatted();
+    tmElements_t current_time = TimeService::get_time_formatted();
     long unix_time = makeTime(current_time);
 
     display.setFullWindow();

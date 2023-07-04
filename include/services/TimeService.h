@@ -8,12 +8,11 @@
 #include "hal/WatchyRTC.h"
 
 class TimeService {
-private:
-    static WatchyRTC RTC;
 public:
-    void update();
-    time_t get_time_unix();
-    tmElements_t get_time_formatted();
+    static void init();
+    static void update();
+    static time_t get_time_unix();
+    static tmElements_t get_time_formatted();
 };
 
 

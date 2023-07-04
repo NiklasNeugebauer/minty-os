@@ -7,9 +7,11 @@
 #include "Fonts/FreeMonoBold24pt7b.h"
 #include "Fonts/FreeMonoBold18pt7b.h"
 
+#include "services/TimeService.h"
+
 void PebbleClock::draw(Display display) {
-    TimeService* time_service = ServiceManager::getInstance()->time_service;
-    tmElements_t current_time = time_service->get_time_formatted();
+
+    tmElements_t current_time = TimeService::get_time_formatted();
     long unix_time = makeTime(current_time);
 
     display.setFullWindow();
@@ -31,9 +33,9 @@ void PebbleClock::draw(Display display) {
     display.setCursor(day_x_pos, 50);
     display.printf("%d", current_time.Day);
 
-    char* weekdays[] = {"SO", "MO", "DI", "MI", "DO", "FR", "SA"};
+    String weekdays[] = {"SO", "MO", "DI", "MI", "DO", "FR", "SA"};
     display.setCursor(30, 90);
-    display.printf("%s", weekdays[current_time.Wday - 1]);
+    display.printf("%s", weekdays[current_time.Wday - 1].c_str());
 
     // STEPS
     uint16_t steps = 0;

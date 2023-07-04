@@ -6,7 +6,6 @@
 #define MINTY_OS_BASICTIME_H
 
 #include "WatchFace.h"
-#include "ServiceManager.h"
 
 class BasicTime : WatchFace{
 private:

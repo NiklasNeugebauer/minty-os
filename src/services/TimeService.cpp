@@ -4,11 +4,13 @@
 
 #include "services/TimeService.h"
 
-WatchyRTC TimeService::RTC;
+RTC_DATA_ATTR WatchyRTC RTC;
+
+void TimeService::init() {
+    RTC.init();
+}
 
 tmElements_t TimeService::get_time_formatted() {
-    RTC.init();
-
     tmElements_t current_time;
     RTC.read(current_time);
     return current_time;
