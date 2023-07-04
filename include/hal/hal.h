@@ -25,5 +25,26 @@
 
 #define Display GxEPD2_BW<WatchyDisplay, WatchyDisplay::HEIGHT>
 
+class HAL {
+public:
+    static uint16_t readRegister(uint8_t address, uint8_t reg, uint8_t *data, uint16_t len) {
+        Wire.beginTransmission(address);
+        Wire.write(reg);
+        Wire.endTransmission();
+        Wire.requestFrom((uint8_t)address, (uint8_t)len);
+        uint8_t i = 0;
+        while (Wire.available()) {
+            data[i++] = Wire.read();
+        }
+        return 0;
+    }
+
+    static uint16_t writeRegister(uint8_t address, uint8_t reg, uint8_t *data, uint16_t len) {
+        Wire.beginTransmission(address);
+        Wire.write(reg);
+        Wire.write(data, len);
+        return (0 != Wire.endTransmission());
+    }
+};
 
 #endif //MINTY_OS_HAL_H

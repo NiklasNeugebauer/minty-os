@@ -8,6 +8,7 @@
 #include "Fonts/FreeMonoBold18pt7b.h"
 
 #include "services/TimeService.h"
+#include "services/StepService.h"
 
 void PebbleClock::draw(Display display) {
 
@@ -38,7 +39,7 @@ void PebbleClock::draw(Display display) {
     display.printf("%s", weekdays[current_time.Wday - 1].c_str());
 
     // STEPS
-    uint16_t steps = 0;
+    uint32_t steps = StepService::get_steps();
     display.setCursor(105, 90);
     display.printf("%04d", steps);
 

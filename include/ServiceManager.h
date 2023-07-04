@@ -6,6 +6,7 @@
 #define MINTY_OS_SERVICEMANAGER_H
 
 #include "services/TimeService.h"
+#include "services/StepService.h"
 
 class ServiceManager {
 public:

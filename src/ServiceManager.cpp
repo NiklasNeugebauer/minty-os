@@ -6,4 +6,5 @@
 
 void ServiceManager::init() {
     TimeService::init();
+    StepService::init();
 }
