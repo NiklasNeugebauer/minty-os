@@ -6,6 +6,7 @@
 
 #include "hal/pins.h"
 #include "conf.h"
+#include "SerialLogger.h"
 #include "ServiceManager.h"
 
 //RTC_DATA_ATTR int guiState;
@@ -27,11 +28,13 @@ void MintyBase::wakeupRoutine() {
         Wire.begin(SDA, SCL); // init i2c
         Serial.begin(115200);
         ServiceManager::init();
+        SERIAL_LOG_I("Welcome to Minty-OS!");
         isFirstStartup = false;
     } else {
         Serial.begin(115200);
         //Wire.begin(SDA, SCL); // init i2c
     }
+    SERIAL_LOG_I("Running wakeup routine!");
 
     esp_sleep_wakeup_cause_t wakeup_reason;
     wakeup_reason = esp_sleep_get_wakeup_cause(); // get wake up reason
@@ -80,5 +83,6 @@ void MintyBase::displayBusyCallback(const void *) {
 }
 
 void MintyBase::reboot() {
+    SERIAL_LOG_I("Rebooting...");
     ESP.restart();
 }
