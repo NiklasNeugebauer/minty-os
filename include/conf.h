@@ -1,4 +1,7 @@
-#define ARDUINO_WATCHY_V20
+#define ARDUINO_WATCHY_V10
+
+// Button Interaction
+#define HOLD_TICKS 40
 
 // wifi
 #define WIFI_AP_TIMEOUT 60

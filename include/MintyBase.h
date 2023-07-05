@@ -18,6 +18,7 @@ public:
 
     void deepSleep();
     void wakeupRoutine();
+    void initializeDisplay();
     void reboot();
 };
 

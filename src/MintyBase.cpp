@@ -35,18 +35,9 @@ void MintyBase::wakeupRoutine() {
         //Wire.begin(SDA, SCL); // init i2c
     }
     SERIAL_LOG_I("Running wakeup routine!");
+}
 
-    esp_sleep_wakeup_cause_t wakeup_reason;
-    wakeup_reason = esp_sleep_get_wakeup_cause(); // get wake up reason
-
-    if (wakeup_reason == ESP_SLEEP_WAKEUP_EXT1) {
-        uint64_t wakeupBit = esp_sleep_get_ext1_wakeup_status();
-        // Menu Button
-        if (wakeupBit & MENU_BTN_MASK) {
-            reboot();
-        }
-    }
-
+void MintyBase::initializeDisplay() {
     // Init the display here for all cases, if unused, it will do nothing
     display.epd2.selectSPI(SPI, SPISettings(20000000, MSBFIRST, SPI_MODE0)); // Set SPI to 20Mhz (default is 4Mhz)
     display.init(0, isFirstStartup, 10,
@@ -55,6 +46,7 @@ void MintyBase::wakeupRoutine() {
 }
 
 void MintyBase::deepSleep() {
+    SERIAL_LOG_I("Getting sleepy...");
     display.hibernate();
     if (isFirstStartup) // For some reason, seems to be enabled on first boot
         esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_ALL);
