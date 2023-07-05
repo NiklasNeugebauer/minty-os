@@ -20,5 +20,4 @@ void BasicTime::draw(Display display) {
     display.printf("Unix time: %016d\n", unix_time);
     display.printf("Time: %02d:%02d\n", current_time.Hour, current_time.Minute);
     display.printf("Time: %02d.%02d\n", current_time.Day, current_time.Month);
-    display.display(false);
 }

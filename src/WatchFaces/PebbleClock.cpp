@@ -42,6 +42,4 @@ void PebbleClock::draw(Display display) {
     uint32_t steps = StepService::get_steps();
     display.setCursor(105, 90);
     display.printf("%04d", steps);
-
-    display.display(false);
 }

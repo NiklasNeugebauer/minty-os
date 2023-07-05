@@ -12,5 +12,4 @@ void HelloWorld::draw(Display display) {
     display.setCursor(5, 53+5);
 
     display.printf("Wakeup: %d", 42);
-    display.display(false);
 }

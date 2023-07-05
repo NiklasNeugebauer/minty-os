@@ -22,6 +22,7 @@ void handleInput() {
     } else {
         base.initializeDisplay();
         watch_face.draw(base.display);
+        base.display.display(true); // partial refresh
     }
 }
 
