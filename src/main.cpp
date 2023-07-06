@@ -1,33 +1,30 @@
 #include "SerialLogger.h"
 #include "MintyBase.h"
 #include "InteractionHandler.h"
-#include "WatchFaces/HelloWorld.h"
-#include "WatchFaces/BasicTime.h"
-#include "WatchFaces/PebbleClock.h"
-
-//#include "./apps/_experiments/hello_world.h"
+#include "WatchFaces/AppSwitcher.h"
 
 MintyBase base;
 InteractionHandler interactionHandler;
 
-//HelloWorld watch_face;
-//BasicTime watch_face;
-PebbleClock watch_face;
+WatchFace *watch_face;
 
 void handleInput() {
-    ButtonState action = interactionHandler.getActions();
-    SERIAL_LOG_D("Action State: ", *(long int*)&action);
+    ActionState action = interactionHandler.getActions();
+    SERIAL_LOG_D("Action State: ", action.print());
     if (action.BACK == LONG_PRESS && action.UP == LONG_PRESS) {
         base.reboot();
     } else {
-        base.initializeDisplay();
-        watch_face.draw(base.display);
-        base.display.display(true); // partial refresh
+        watch_face->handleInput(action);
     }
+
+    base.initializeDisplay();
+    watch_face->draw(&base.display);
+    base.display.display(false); // partial refresh
 }
 
 void setup () {
     base.wakeupRoutine();
+    watch_face = new AppSwitcher();
 }
 
 void loop () {

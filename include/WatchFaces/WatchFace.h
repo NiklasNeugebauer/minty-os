@@ -6,11 +6,14 @@
 #define MINTY_OS_WATCHFACE_H
 
 #include "hal/hal.h"
+# include "InteractionHandler.h"
 
 class WatchFace {
-private:
 public:
-    virtual void draw(Display display) = 0;
+    WatchFace(){}
+    virtual ~WatchFace(){}
+    virtual void draw(Display *display) = 0;
+    virtual void handleInput(ActionState actionState) {};
 };
 
 

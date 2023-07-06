@@ -27,14 +27,16 @@ void MintyBase::wakeupRoutine() {
     if (isFirstStartup) {
         Wire.begin(SDA, SCL); // init i2c
         Serial.begin(115200);
-        ServiceManager::init();
         SERIAL_LOG_I("Welcome to Minty-OS!");
+        ServiceManager::init();
+        esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_ALL);
         isFirstStartup = false;
     } else {
+        SERIAL_LOG_I("Running wakeup routine!");
         Serial.begin(115200);
         //Wire.begin(SDA, SCL); // init i2c
     }
-    SERIAL_LOG_I("Running wakeup routine!");
+    SERIAL_LOG_D("Wakeup reason: ", esp_sleep_get_wakeup_cause());
 }
 
 void MintyBase::initializeDisplay() {
@@ -48,9 +50,6 @@ void MintyBase::initializeDisplay() {
 void MintyBase::deepSleep() {
     SERIAL_LOG_I("Getting sleepy...");
     display.hibernate();
-    if (isFirstStartup) // For some reason, seems to be enabled on first boot
-        esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_ALL);
-    isFirstStartup = false; // Notify not to init it again
     RTC.clearAlarm();        // resets the alarm flag in the RTC
 
     // Set GPIOs 0-39 to input to avoid power leaking out

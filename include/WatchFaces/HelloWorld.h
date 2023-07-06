@@ -8,9 +8,10 @@
 #include "WatchFace.h"
 #include <Fonts/FreeMonoBold9pt7b.h>
 
-class HelloWorld : WatchFace {
+class HelloWorld : public WatchFace {
 public:
-    void draw(Display display) override;
+    void draw(Display *display);
+    virtual void handleInput(ActionState actionState) {};
 };
 
 

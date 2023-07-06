@@ -43,11 +43,11 @@ void InteractionHandler::updateState(unsigned int &var, bool active) {
     var = active * var + active;
 }
 
-ButtonState InteractionHandler::getActions() {
+ActionState InteractionHandler::getActions() {
     return actions;
 }
 
-void InteractionHandler::updateAction(unsigned int &var, unsigned int state) {
+void InteractionHandler::updateAction(ButtonAction &var, unsigned int state) {
     if (state > HOLD_TICKS && var < LONG_PRESS) {
         var = LONG_PRESS;
     } else if (state > 0 && var < SHORT_PRESS) {

@@ -7,9 +7,10 @@
 
 #include "WatchFace.h"
 
-class PebbleClock : WatchFace {
+class PebbleClock : public WatchFace {
 public:
-    void draw(GxEPD2_BW<WatchyDisplay, WatchyDisplay::HEIGHT> display) override;
+    void draw(GxEPD2_BW<WatchyDisplay, WatchyDisplay::HEIGHT> *display);
+    void handleInput(ActionState actionState);
 };
 
 

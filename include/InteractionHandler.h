@@ -5,6 +5,8 @@
 #ifndef MINTY_OS_INTERACTIONHANDLER_H
 #define MINTY_OS_INTERACTIONHANDLER_H
 
+#include <sstream>
+
 struct ButtonState {
     unsigned UP = 0;
     unsigned DOWN = 0;
@@ -12,24 +14,55 @@ struct ButtonState {
     unsigned BACK = 0;
 };
 
-enum BUTTON_ACTION{
+enum ButtonAction{
     UNPRESSED,
     SHORT_PRESS,
     LONG_PRESS
 };
 
+struct ActionState {
+    ButtonAction UP;
+    ButtonAction DOWN;
+    ButtonAction MENU;
+    ButtonAction BACK;
+
+    ActionState(ButtonAction up, ButtonAction down, ButtonAction menu, ButtonAction back)
+    : UP(up), DOWN(down), MENU(menu), BACK(back)
+    {}
+
+    ActionState()
+    : UP(UNPRESSED), DOWN(UNPRESSED), MENU(UNPRESSED), BACK(UNPRESSED)
+    {}
+
+    std::string print() {
+        std::stringstream ss;
+
+        ss << "UP: " << UP << "  DOWN: " << DOWN << "  MENU: " << MENU << "  BACK: " << BACK;
+
+        std::string result = ss.str();
+        return result;
+    }
+
+    bool operator==(const ActionState& other) const {
+        return UP == other.UP &&
+               DOWN == other.DOWN &&
+               MENU == other.MENU &&
+               BACK == other.BACK;
+    }
+};
+
 class InteractionHandler {
 private:
     ButtonState state;
-    ButtonState actions;
+    ActionState actions;
 
-    void updateAction(unsigned int &var, unsigned int state);
+    void updateAction(ButtonAction &var, unsigned int state);
     void updateState(unsigned& var, bool active);
 public:
     InteractionHandler();
     bool finished();
     void poll();
-    ButtonState getActions();
+    ActionState getActions();
 };
 
 

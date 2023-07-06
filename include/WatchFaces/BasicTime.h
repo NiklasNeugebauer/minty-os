@@ -7,10 +7,10 @@
 
 #include "WatchFace.h"
 
-class BasicTime : WatchFace{
+class BasicTime : public WatchFace{
 private:
 public:
-    void draw(Display display) override;
+    void draw(Display *display);
 };
 
 
