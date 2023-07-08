@@ -5,6 +5,7 @@
 #ifndef WATCHY_RTC_H
 #define WATCHY_RTC_H
 
+#include "conf.h"
 #include "pins.h"
 #include "time.h"
 #include <DS3232RTC.h>
@@ -25,7 +26,6 @@ public:
 
 public:
     WatchyRTC();
-    void init();
     void config(String datetime); // String datetime format is YYYY:MM:DD:HH:MM:SS
     void clearAlarm();
     void read(tmElements_t &tm);

@@ -8,6 +8,9 @@
 #include "hal/WatchyRTC.h"
 
 class TimeService {
+private:
+    static WatchyRTC RTC;
+
 public:
     static void init();
     static void update();

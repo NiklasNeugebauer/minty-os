@@ -3,11 +3,12 @@
 //
 
 #include "services/TimeService.h"
+#include "SerialLogger.h"
 
-RTC_DATA_ATTR WatchyRTC RTC;
+WatchyRTC TimeService::RTC;
 
 void TimeService::init() {
-    RTC.init();
+    SERIAL_LOG_I("Starting TimeService...");
 }
 
 tmElements_t TimeService::get_time_formatted() {

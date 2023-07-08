@@ -4,24 +4,8 @@
 
 #include "hal/WatchyRTC.h"
 
-WatchyRTC::WatchyRTC() : rtc_ds(false) {}
+WatchyRTC::WatchyRTC() : rtc_ds(false), rtcType(RTC_TYPE) {}
 
-void WatchyRTC::init() {
-    byte error;
-    Wire.beginTransmission(RTC_DS_ADDR);
-    error = Wire.endTransmission();
-    if (error == 0) {
-        rtcType = DS3231;
-    } else {
-        Wire.beginTransmission(RTC_PCF_ADDR);
-        error = Wire.endTransmission();
-        if (error == 0) {
-            rtcType = PCF8563;
-        } else {
-            // RTC Error
-        }
-    }
-}
 
 void WatchyRTC::config(
         String datetime) { // String datetime format is YYYY:MM:DD:HH:MM:SS

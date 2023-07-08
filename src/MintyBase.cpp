@@ -28,6 +28,7 @@ void MintyBase::wakeupRoutine() {
         Wire.begin(SDA, SCL); // init i2c
         Serial.begin(115200);
         SERIAL_LOG_I("Welcome to Minty-OS!");
+        RTC.config("");
         ServiceManager::init();
         esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_ALL);
         isFirstStartup = false;
