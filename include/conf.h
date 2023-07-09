@@ -1,7 +1,10 @@
+#ifndef MINTY_OS_CONF
+#define MINTY_OS_CONF
+
 #define ARDUINO_WATCHY_V10
 
 // Button Interaction
-#define HOLD_TICKS 40
+#define HOLD_TICKS 20
 
 // wifi
 #define WIFI_AP_TIMEOUT 60
@@ -19,4 +22,6 @@
 #define WEATHER_UPDATE_INTERVAL 30 //must be greater than 5, measured in minutes
 //NTP Settings
 #define NTP_SERVER "pool.ntp.org"
-#define GMT_OFFSET_SEC 3600 * -5 //New York is UTC -5 EST, -4 EDT, will be overwritten by weather data
+#define GMT_OFFSET_SEC 3600 * 2 //New York is UTC -5 EST, -4 EDT, will be overwritten by weather data
+
+#endif

@@ -1,3 +1,8 @@
+#ifndef MINTY_OS_PINS
+#define MINTY_OS_PINS
+
+#include "conf.h"
+
 #ifndef CONFIG_H
 #define CONFIG_H
 
@@ -35,5 +40,7 @@
 #define DOWN_BTN_MASK GPIO_SEL_4
 #define ACC_INT_MASK  GPIO_SEL_14
 #define BTN_PIN_MASK  MENU_BTN_MASK|BACK_BTN_MASK|UP_BTN_MASK|DOWN_BTN_MASK
+
+#endif
 
 #endif
