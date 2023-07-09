@@ -5,6 +5,7 @@
 #ifndef MINTY_OS_WIFISERVICE_H
 #define MINTY_OS_WIFISERVICE_H
 
+#include "Service.h"
 #include "hal/hal.h"
 
 #include <WiFi.h>
@@ -21,7 +22,7 @@ struct WifiInfo final {
     wifi_event_id_t WiFiEventID;
 };
 
-class WifiService {
+class WifiService : Service {
 private:
 public:
     static void init();

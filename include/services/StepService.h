@@ -5,9 +5,10 @@
 #ifndef MINTY_OS_STEPSERVICE_H
 #define MINTY_OS_STEPSERVICE_H
 
+#include "Service.h"
 #include "hal/bma.h"
 
-class StepService {
+class StepService : Service{
 public:
     StepService();
     static void init();

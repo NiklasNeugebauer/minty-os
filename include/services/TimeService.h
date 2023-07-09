@@ -5,9 +5,10 @@
 #ifndef MINTY_OS_TIMESERVICE_H
 #define MINTY_OS_TIMESERVICE_H
 
+#include "Service.h"
 #include "hal/WatchyRTC.h"
 
-class TimeService {
+class TimeService : Service{
 private:
     static WatchyRTC RTC;
 
