@@ -11,6 +11,8 @@
 #include "InteractionHandler.h"
 #include "WatchFaces/AppSwitcher.h"
 
+#include "bitmaps/mintyOS.h"
+
 InteractionHandler interactionHandler;
 
 WatchFace *watch_face;
@@ -35,10 +37,12 @@ void MintyBase::wakeupRoutine() {
         Wire.begin(SDA, SCL); // init i2c
         Serial.begin(115200);
         SERIAL_LOG_I("Welcome to Minty-OS!");
+        initializeDisplay();
+        display.drawBitmap(0,0,epd_bitmap_BootLogo,200,200,GxEPD_WHITE);
+        display.display(false);
         RTC.config("");
         ServiceManager::init();
         esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_ALL);
-        isFirstStartup = false;
     } else {
         SERIAL_LOG_I("Running wakeup routine!");
         Serial.begin(115200);
@@ -85,6 +89,11 @@ void MintyBase::deepSleep() {
     esp_sleep_enable_ext1_wakeup(
             BTN_PIN_MASK,
             ESP_EXT1_WAKEUP_ANY_HIGH); // enable deep sleep wake on button press
+
+    if (isFirstStartup) {
+        isFirstStartup = false;
+    }
+
     esp_deep_sleep_start();
 }
 
@@ -99,7 +108,7 @@ void MintyBase::handleInput() {
 
     initializeDisplay();
     watch_face->draw(&display);
-    display.display(!watch_face->shouldDrawFull());
+    display.display(!(watch_face->shouldDrawFull() || isFirstStartup));
 }
 
 void MintyBase::displayBusyCallback(const void *) {
