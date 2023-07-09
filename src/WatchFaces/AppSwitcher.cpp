@@ -14,6 +14,8 @@ AppSwitcher::AppSwitcher() {
     faces[0] = new PebbleClock();
     faces[1] = new HelloWorld();
     faces[2] = new BasicTime();
+
+    fullDraw = false;
 };
 
 AppSwitcher::~AppSwitcher() {
@@ -32,8 +34,10 @@ void AppSwitcher::handleInput(ActionState actionState) {
     SERIAL_LOG_D("Handling Button");
     if (actionState == ActionState(LONG_PRESS, UNPRESSED, UNPRESSED, UNPRESSED)) {
         FACE_INDEX = (FACE_INDEX + 1) % N_FACES;
+        fullDraw = true;
     } else if (actionState == ActionState(UNPRESSED, LONG_PRESS, UNPRESSED, UNPRESSED)) {
         FACE_INDEX = (FACE_INDEX - 1) % N_FACES;
+        fullDraw = true;
     } else {
         currentFace()->handleInput(actionState);
     }
@@ -45,4 +49,8 @@ WatchFace* AppSwitcher::currentFace() {
     } else {
         return faces[0];
     }
+}
+
+bool AppSwitcher::shouldDrawFull() {
+    return fullDraw || currentFace()->shouldDrawFull();
 }

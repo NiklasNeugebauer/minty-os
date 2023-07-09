@@ -19,7 +19,7 @@ void handleInput() {
 
     base.initializeDisplay();
     watch_face->draw(&base.display);
-    base.display.display(false); // partial refresh
+    base.display.display(!watch_face->shouldDrawFull());
 }
 
 void setup () {

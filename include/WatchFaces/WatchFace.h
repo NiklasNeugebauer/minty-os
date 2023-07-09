@@ -14,6 +14,7 @@ public:
     virtual ~WatchFace(){}
     virtual void draw(Display *display) = 0;
     virtual void handleInput(ActionState actionState) {};
+    virtual bool shouldDrawFull() {return false;};
 };
 
 

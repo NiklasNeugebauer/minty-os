@@ -13,6 +13,7 @@ private:
     const static unsigned N_FACES = 3;
     WatchFace* faces[N_FACES];
     WatchFace* face;
+    bool fullDraw;
 
     WatchFace* currentFace();
 public:
@@ -20,6 +21,7 @@ public:
     ~AppSwitcher();
     void draw(Display *display);
     void handleInput(ActionState actionState);
+    bool shouldDrawFull();
 };
 
 
