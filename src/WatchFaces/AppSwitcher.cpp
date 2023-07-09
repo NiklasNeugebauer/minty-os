@@ -4,7 +4,7 @@
 
 #include "WatchFaces/AppSwitcher.h"
 #include "SerialLogger.h"
-#include "WatchFaces/HelloWorld.h"
+#include "WatchFaces/DebugFace.h"
 #include "WatchFaces/PebbleClock.h"
 #include "WatchFaces/BasicTime.h"
 
@@ -12,7 +12,7 @@ RTC_DATA_ATTR unsigned FACE_INDEX = 0;
 
 AppSwitcher::AppSwitcher() {
     faces[0] = new PebbleClock();
-    faces[1] = new HelloWorld();
+    faces[1] = new DebugFace();
     faces[2] = new BasicTime();
 
     fullDraw = false;
