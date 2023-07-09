@@ -7,12 +7,14 @@
 
 #include "services/TimeService.h"
 #include "services/StepService.h"
+#include "services/WifiService.h"
 
 class ServiceManager {
 public:
     static void init() {
         TimeService::init();
         StepService::init();
+        WifiService::init();
     }
 };
 
