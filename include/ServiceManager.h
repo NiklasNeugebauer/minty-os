@@ -8,10 +8,12 @@
 #include "services/TimeService.h"
 #include "services/StepService.h"
 #include "services/WifiService.h"
+#include "services/BatteryManager.h"
 
 class ServiceManager {
 public:
     static void init() {
+        BatteryManager::init();
         TimeService::init();
         StepService::init();
         WifiService::init();
@@ -20,6 +22,7 @@ public:
     }
 
     static void update() {
+        BatteryManager::update();
         TimeService::update();
         StepService::update();
         WifiService::update();
