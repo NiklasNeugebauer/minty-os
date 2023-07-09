@@ -3,7 +3,12 @@
 //
 
 #include "services/TimeService.h"
+
+#include "services/WifiService.h"
 #include "SerialLogger.h"
+
+#include <NTPClient.h>
+#include <WiFiUdp.h>
 
 WatchyRTC TimeService::RTC;
 
@@ -23,5 +28,21 @@ time_t TimeService::get_time_unix() {
 }
 
 void TimeService::update() {
+    syncNTP(GMT_OFFSET_SEC, NTP_SERVER);
+}
 
+bool TimeService::syncNTP(long gmt, String ntpServer) {
+    // NTP sync - call after connecting to WiFi
+    if (WifiService::connect() == WL_CONNECTED) {
+        WiFiUDP ntpUDP;
+        NTPClient timeClient(ntpUDP, ntpServer.c_str(), gmt);
+        timeClient.begin();
+        if (!timeClient.forceUpdate()) {
+            return false; // NTP sync failed
+        }
+        tmElements_t tm;
+        breakTime((time_t)timeClient.getEpochTime(), tm);
+        RTC.set(tm);
+        return true;
+    }
 }

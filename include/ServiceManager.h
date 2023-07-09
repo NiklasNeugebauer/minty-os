@@ -15,6 +15,14 @@ public:
         TimeService::init();
         StepService::init();
         WifiService::init();
+
+        update();
+    }
+
+    static void update() {
+        TimeService::update();
+        StepService::update();
+        WifiService::update();
     }
 };
 

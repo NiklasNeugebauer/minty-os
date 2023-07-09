@@ -11,6 +11,7 @@ class TimeService {
 private:
     static WatchyRTC RTC;
 
+    static bool syncNTP(long gmt, String ntpServer);
 public:
     static void init();
     static void update();
