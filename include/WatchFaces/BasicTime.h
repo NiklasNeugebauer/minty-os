@@ -10,7 +10,7 @@
 class BasicTime : public WatchFace{
 private:
 public:
-    void draw(Display *display);
+    void draw(Display *display) override;
 };
 
 

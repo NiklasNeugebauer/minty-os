@@ -19,8 +19,8 @@ private:
 public:
     AppSwitcher();
     ~AppSwitcher();
-    void draw(Display *display);
-    void handleInput(ActionState actionState);
+    void draw(Display *display) override;
+    void handleInput(ActionState actionState) override;
     bool shouldDrawFull();
 };
 

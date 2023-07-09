@@ -9,8 +9,8 @@
 
 class PebbleClock : public WatchFace {
 public:
-    void draw(GxEPD2_BW<WatchyDisplay, WatchyDisplay::HEIGHT> *display);
-    void handleInput(ActionState actionState);
+    void draw(GxEPD2_BW<WatchyDisplay, WatchyDisplay::HEIGHT> *display) override;
+    void handleInput(ActionState actionState) override;
 };
 
 

@@ -10,8 +10,7 @@
 
 class HelloWorld : public WatchFace {
 public:
-    void draw(Display *display);
-    virtual void handleInput(ActionState actionState) {};
+    void draw(Display *display) override;
 };
 
 
