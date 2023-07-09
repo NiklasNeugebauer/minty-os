@@ -9,11 +9,11 @@
 
 class BatteryManager : Service{
 private:
-    static float getBatteryVoltage();
 public:
     static void init();
     static void update();
     static unsigned getBatteryLevel();
+    static float getBatteryVoltage();
 };
 
 
