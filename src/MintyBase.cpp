@@ -5,9 +5,15 @@
 #include "../include/MintyBase.h"
 
 #include "hal/pins.h"
-#include "conf.h"
 #include "SerialLogger.h"
 #include "ServiceManager.h"
+
+#include "InteractionHandler.h"
+#include "WatchFaces/AppSwitcher.h"
+
+InteractionHandler interactionHandler;
+
+WatchFace *watch_face;
 
 //RTC_DATA_ATTR int guiState;
 //RTC_DATA_ATTR int menuIndex;
@@ -22,6 +28,7 @@ RTC_DATA_ATTR bool isFirstStartup = true;
 WatchyRTC MintyBase::RTC;
 GxEPD2_BW<WatchyDisplay, WatchyDisplay::HEIGHT> MintyBase::display(
         WatchyDisplay(DISPLAY_CS, DISPLAY_DC, DISPLAY_RES, DISPLAY_BUSY));
+
 
 void MintyBase::wakeupRoutine() {
     if (isFirstStartup) {
@@ -38,6 +45,19 @@ void MintyBase::wakeupRoutine() {
         //Wire.begin(SDA, SCL); // init i2c
     }
     SERIAL_LOG_D("Wakeup reason: ", esp_sleep_get_wakeup_cause());
+    watch_face = new AppSwitcher();
+}
+
+void MintyBase::loop() {
+    SERIAL_LOG_I("Loop");
+    interactionHandler.poll();
+    if (interactionHandler.finished()) {
+        SERIAL_LOG_I("  done.");
+        handleInput();
+        deepSleep();
+    }
+    SERIAL_LOG_I("  InteractionHandler busy!");
+    delay(50);
 }
 
 void MintyBase::initializeDisplay() {
@@ -66,6 +86,20 @@ void MintyBase::deepSleep() {
             BTN_PIN_MASK,
             ESP_EXT1_WAKEUP_ANY_HIGH); // enable deep sleep wake on button press
     esp_deep_sleep_start();
+}
+
+void MintyBase::handleInput() {
+    ActionState action = interactionHandler.getActions();
+    SERIAL_LOG_D("Action State: ", action.print());
+    if (action.BACK == LONG_PRESS && action.UP == LONG_PRESS) {
+        reboot();
+    } else {
+        watch_face->handleInput(action);
+    }
+
+    initializeDisplay();
+    watch_face->draw(&display);
+    display.display(!watch_face->shouldDrawFull());
 }
 
 void MintyBase::displayBusyCallback(const void *) {

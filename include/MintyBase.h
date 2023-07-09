@@ -18,6 +18,8 @@ public:
 
     void deepSleep();
     void wakeupRoutine();
+    void loop();
+    void handleInput();
     void initializeDisplay();
     void reboot();
 };
