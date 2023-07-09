@@ -56,8 +56,9 @@ private:
     ButtonState state;
     ActionState actions;
 
-    void updateAction(ButtonAction &var, unsigned int state);
-    void updateState(unsigned& var, bool active);
+    void pullUpActions();
+    static void updateAction(ButtonAction &var, unsigned int state);
+    static void updateState(unsigned& var, bool active);
 public:
     InteractionHandler();
     bool finished();

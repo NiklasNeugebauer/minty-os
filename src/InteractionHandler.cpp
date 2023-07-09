@@ -22,7 +22,12 @@ InteractionHandler::InteractionHandler() {
 }
 
 bool InteractionHandler::finished() {
-    return !(state.MENU || state.BACK || state.UP || state.DOWN);
+    /// The handler is finished if all buttons are up or there has been a long press
+    return !(state.MENU || state.BACK || state.UP || state.DOWN)
+            || actions.MENU == LONG_PRESS
+            || actions.BACK == LONG_PRESS
+            || actions.UP == LONG_PRESS
+            || actions.DOWN == LONG_PRESS;
 }
 
 void InteractionHandler::poll() {
@@ -37,14 +42,35 @@ void InteractionHandler::poll() {
     updateAction(actions.BACK, state.BACK);
     updateAction(actions.UP, state.UP);
     updateAction(actions.DOWN, state.DOWN);
-}
 
-void InteractionHandler::updateState(unsigned int &var, bool active) {
-    var = active * var + active;
+    pullUpActions();
 }
 
 ActionState InteractionHandler::getActions() {
     return actions;
+}
+
+void InteractionHandler::pullUpActions() {
+    /// This function's purpose is to create double long presses
+    /// even if not both buttons have been pressed long enough
+    /// This also enables finishing before letting go of the buttons
+    const unsigned SECONDARY_FACTOR = 2;
+
+    bool anyLongPress = actions.MENU == LONG_PRESS
+                        || actions.BACK == LONG_PRESS
+                        || actions.UP == LONG_PRESS
+                        || actions.DOWN == LONG_PRESS;
+
+    if (anyLongPress) {
+        updateAction(actions.MENU, SECONDARY_FACTOR * state.MENU);
+        updateAction(actions.BACK, SECONDARY_FACTOR * state.BACK);
+        updateAction(actions.UP, SECONDARY_FACTOR * state.UP);
+        updateAction(actions.DOWN, SECONDARY_FACTOR * state.DOWN);
+    }
+}
+
+void InteractionHandler::updateState(unsigned int &var, bool active) {
+    var = active * var + active;
 }
 
 void InteractionHandler::updateAction(ButtonAction &var, unsigned int state) {
