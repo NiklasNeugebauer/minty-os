@@ -14,10 +14,10 @@ InteractionHandler::InteractionHandler() {
 
     if (wakeup_reason == ESP_SLEEP_WAKEUP_EXT1) {
         uint64_t wakeupBit = esp_sleep_get_ext1_wakeup_status();
-        state.MENU = !(wakeupBit & MENU_BTN_MASK);
-        state.BACK = !(wakeupBit & BACK_BTN_MASK);
-        state.UP = !(wakeupBit & UP_BTN_MASK);
-        state.DOWN = !(wakeupBit & DOWN_BTN_MASK);
+        actions.MENU = !(wakeupBit & MENU_BTN_MASK) ? UNPRESSED : SHORT_PRESS;
+        actions.BACK = !(wakeupBit & BACK_BTN_MASK) ? UNPRESSED : SHORT_PRESS;
+        actions.UP = !(wakeupBit & UP_BTN_MASK) ? UNPRESSED : SHORT_PRESS;
+        actions.DOWN = !(wakeupBit & DOWN_BTN_MASK) ? UNPRESSED : SHORT_PRESS;
     }
 }
 
