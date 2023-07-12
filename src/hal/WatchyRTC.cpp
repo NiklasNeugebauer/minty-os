@@ -16,18 +16,15 @@ void WatchyRTC::config(
     }
 }
 
-void WatchyRTC::clearAlarm() {
+void WatchyRTC::setAlarm(tmElements_t tm) {
     if (rtcType == DS3231) {
+        rtc_ds.setAlarm(DS3232RTC::ALM2_MATCH_DATE,
+                        0, tm.Minute, tm.Hour, tm.Day);
         rtc_ds.alarm(DS3232RTC::ALARM_2);
+        rtc_ds.alarmInterrupt(DS3232RTC::ALARM_2, true);
     } else {
-        int nextAlarmMinute = 0;
         rtc_pcf.clearAlarm(); // resets the alarm flag in the RTC
-        nextAlarmMinute = rtc_pcf.getMinute();
-        nextAlarmMinute =
-                (nextAlarmMinute == 59)
-                ? 0
-                : (nextAlarmMinute + 1); // set alarm to trigger 1 minute from now
-        rtc_pcf.setAlarm(nextAlarmMinute, 99, 99, 99);
+        rtc_pcf.setAlarm(tm.Minute, tm.Hour, tm.Day, 99);
     }
 }
 
@@ -62,7 +59,8 @@ void WatchyRTC::set(tmElements_t tm) {
         // PCF8563 stores day of week in 0-6 range
         // hr, min, sec
         rtc_pcf.setTime(tm.Hour, tm.Minute, tm.Second);
-        clearAlarm();
+
+        // TODO how do we make sure that alarms are still accurate?
     }
 }
 
@@ -118,7 +116,6 @@ void WatchyRTC::_PCFConfig(
     }
     // on POR event, PCF8563 sets month to 0, which will give an error since
     // months are 1-12
-    clearAlarm();
 }
 
 String WatchyRTC::_getValue(String data, char separator, int index) {

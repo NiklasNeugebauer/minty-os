@@ -1,6 +1,7 @@
 //
 // Created by niklas on 7/2/23.
 //
+// NTP code is based off SQFMI's Watchy.cpp at https://github.com/sqfmi/Watchy/blob/master/src/Watchy.cpp
 
 #include "services/TimeService.h"
 
@@ -11,9 +12,12 @@
 #include <WiFiUdp.h>
 
 WatchyRTC TimeService::RTC;
+RTC_DATA_ATTR WatchAlarm watchAlarm;
 
 void TimeService::init() {
     SERIAL_LOG_I("Starting TimeService...");
+    RTC.config("");
+    // TODO store and load alarm data into NVS
 }
 
 tmElements_t TimeService::get_time_formatted() {
@@ -45,4 +49,27 @@ bool TimeService::syncNTP(long gmt, String ntpServer) {
         RTC.set(tm);
         return true;
     }
+}
+
+void TimeService::setAlarm(tmElements_t next_time, bool repeat_days[7]) {
+    watchAlarm.next_time = next_time;
+    memccpy(watchAlarm.repeat_days, repeat_days, 7, sizeof(bool));
+    watchAlarm.active = true;
+}
+
+void TimeService::setRtcInterrupt() {
+    tmElements_t next_wakeup = nextAlarm();
+    SERIAL_LOG_D("Setting next wakeup to ", next_wakeup.Hour, ":",  next_wakeup.Minute, " on Day ", next_wakeup.Day);
+    RTC.setAlarm(next_wakeup);
+}
+
+tmElements_t TimeService::nextAlarm() {
+    /// Determines the next closest alarm to be fired
+    int nextAlarmMinute = 0;
+    tmElements_t current_time = get_time_formatted();
+    tmElements_t nextMinute = current_time;
+    nextMinute.Minute = (++current_time.Minute) % 60;
+    nextMinute.Second = 0;
+
+    return nextMinute;
 }
