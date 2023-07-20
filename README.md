@@ -9,11 +9,13 @@ A lot of it makes heavy use of the original Watchy code by SQFMI, but the genera
 
 ### Modularity
 One of my main goals was support for multiple watch faces.
-Right now, there is a WatchFace class interface, which do what their names suggest:
-draw - draws the image of the watch face
-handleInput - handles a button combination input
+Right now, there is a WatchFace class interface with functions that do what their names suggest:
 
-Upon wakeup the base system calls these functions of a single watch face.
+**draw** - draws the image of the watch face
+
+**handleInput** - handles a button combination input
+
+Upon wakeup the base system calls these functions on a single watch face.
 Multiple watch face support is achieved through a tree of WatchFace child classes.
 At its base lives the AppSwitcher, which handles long presses of the UP and DOWN buttons by switching faces.
 Other inputs are relayed to the current face.
@@ -36,3 +38,13 @@ For example, the TimeService can both provide the current time from the RTC and 
 
 New Services should be added into the ServiceManager.
 It initializes its services once at boot time and updates them regularly.
+
+### Future Plans
+#### Timers and Alarms
+The ability to set a quick countdown timer is a must-have for me and will be implemented soon along with regular alarms.
+
+#### Overlays
+Overlays will only draw after the current watch face and are independent of the watch face. 
+They would show temporary information such as timers or other notifications.
+A status bar could also be implemented as an overlay
+
