@@ -12,18 +12,22 @@ RTC_DATA_ATTR unsigned time_set_index;
 RTC_DATA_ATTR unsigned timer_index;
 
 void TimerFace::draw(GxEPD2_BW<WatchyDisplay, WatchyDisplay::HEIGHT> *display) {
-    unsigned display_duration_minutes = 0;
+    unsigned display_duration_seconds = 0;
 
-        time_t time_to_alarm = TimeService::timeToAlarm();
-        bool timer_active = time_to_alarm > 0;
+    time_t time_to_alarm = TimeService::timeToAlarm();
+    bool timer_active = time_to_alarm > 0;
+
     if (timer_active) {
-        display_duration_minutes = time_to_alarm / 60;
+        display_duration_seconds = max((time_t)0, time_to_alarm);
     } else {
-        display_duration_minutes = duration_minutes;
+        display_duration_seconds = duration_minutes * 60;
     }
 
-    unsigned hour_part = display_duration_minutes / 60;
-    unsigned minute_part = display_duration_minutes - hour_part * 60;
+    unsigned second_part = display_duration_seconds % 60;
+    unsigned tmp_rest_duration = display_duration_seconds / 60;
+    unsigned minute_part = tmp_rest_duration % 60;
+    unsigned hour_part = tmp_rest_duration / 60;
+
 
     display->setFullWindow();
     display->fillScreen(GxEPD_BLACK);
@@ -32,7 +36,7 @@ void TimerFace::draw(GxEPD2_BW<WatchyDisplay, WatchyDisplay::HEIGHT> *display) {
     display->setTextColor(GxEPD_WHITE);
     display->setCursor(15, 90);
 
-    display->printf("%02d:%02d", hour_part, minute_part);
+    display->printf("%02d:%02d:%02d", hour_part, minute_part, second_part);
     unsigned character_slots[] = {0,1, 3,4, 6,7};
     display->drawRect(15 + 21 * character_slots[time_set_index], 100, 18, 3, GxEPD_WHITE);
 
