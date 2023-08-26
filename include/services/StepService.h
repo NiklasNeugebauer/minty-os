@@ -14,6 +14,7 @@ public:
     static void init();
     static void update();
     static uint32_t get_steps();
+    static void resetSteps();
 };
 
 extern RTC_DATA_ATTR BMA423 sensor;

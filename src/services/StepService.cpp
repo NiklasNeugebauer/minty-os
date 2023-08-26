@@ -112,10 +112,13 @@ void StepService::init() {
 }
 
 void StepService::update() {
-    sensor.resetStepCounter();
 }
 
 uint32_t StepService::get_steps() {
     uint32_t stepCount = sensor.getCounter();
     return stepCount;
+}
+
+void StepService::resetSteps() {
+    sensor.resetStepCounter();
 }
