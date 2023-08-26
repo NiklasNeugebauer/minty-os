@@ -10,6 +10,10 @@
 #include "services/StepService.h"
 #include "services/BatteryManager.h"
 
+#include "services/VibrationService.h"
+
+#include "SerialLogger.h"
+
 void DebugFace::draw(GxEPD2_BW<WatchyDisplay, WatchyDisplay::HEIGHT> *display) {
     tmElements_t current_time = TimeService::get_time_formatted();
 
@@ -27,13 +31,13 @@ void DebugFace::draw(GxEPD2_BW<WatchyDisplay, WatchyDisplay::HEIGHT> *display) {
     // DATE
     const String weekdays[] = {"Sonntag", "Montag", "Dienstag", "Mittwoch",
                                "Donnerstag", "Freitag", "Samstag"};
-    display->printf(" Datum: %02d.%02d.%04d\n", current_time.Day, current_time.Month, 1970 + current_time.Year);
+    display->printf(" Datum: %02d.%02d.%04d\n", current_time.Day, current_time.Month, tmYearToCalendar(current_time.Year));
 
     // TIME
     display->printf(" Zeit: %02d:%02d\n", current_time.Hour, current_time.Minute);
 
     // WEEKDAY
-    display->printf(" Tag: %s\n", weekdays[current_time.Wday].c_str());
+    display->printf(" Tag: %s\n", weekdays[current_time.Wday - 1].c_str());
 
     // STEPS
     uint32_t steps = StepService::get_steps();
@@ -44,5 +48,6 @@ void DebugFace::draw(GxEPD2_BW<WatchyDisplay, WatchyDisplay::HEIGHT> *display) {
 }
 
 void DebugFace::handleInput(ActionState actionState) {
-
+    SERIAL_LOG_D("brr");
+    VibrationService::vibrateMS(100);
 }
