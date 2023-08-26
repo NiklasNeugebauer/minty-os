@@ -26,6 +26,7 @@ private:
     static bool isPast(tmElements_t tm);
     static void updateWatchAlarms();
     static void triggerAlarm();
+    static tmElements_t nextMinute();
 public:
     static void init();
     static void update();

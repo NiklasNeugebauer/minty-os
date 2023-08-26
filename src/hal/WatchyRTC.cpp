@@ -18,12 +18,13 @@ void WatchyRTC::config(
 
 void WatchyRTC::setAlarm(tmElements_t tm) {
     if (rtcType == DS3231) {
-        rtc_ds.setAlarm(DS3232RTC::ALM2_MATCH_DATE,
-                        0, tm.Minute, tm.Hour, tm.Day);
-        rtc_ds.alarm(DS3232RTC::ALARM_2);
-        rtc_ds.alarmInterrupt(DS3232RTC::ALARM_2, true);
+        rtc_ds.setAlarm(DS3232RTC::ALM1_MATCH_DATE,
+                        tm.Second, tm.Minute, tm.Hour, tm.Day);
+        rtc_ds.alarm(DS3232RTC::ALARM_1);
+        rtc_ds.alarmInterrupt(DS3232RTC::ALARM_1, true);
     } else {
         rtc_pcf.clearAlarm(); // resets the alarm flag in the RTC
+        // TODO increase minute by one to ensure alarm is in the future
         rtc_pcf.setAlarm(tm.Minute, tm.Hour, tm.Day, 99);
     }
 }
@@ -36,10 +37,10 @@ void WatchyRTC::setAlarmNextMinute() {
                 (nextAlarmMinute == 59)
                 ? 0
                 : (nextAlarmMinute + 1); // set alarm to trigger 1 minute from now
-        rtc_ds.setAlarm(DS3232RTC::ALM2_MATCH_MINUTES,
+        rtc_ds.setAlarm(DS3232RTC::ALM1_MATCH_MINUTES,
                         0, nextAlarmMinute, 0, 0);
-        rtc_ds.alarm(DS3232RTC::ALARM_2);
-        rtc_ds.alarmInterrupt(DS3232RTC::ALARM_2, true);
+        rtc_ds.alarm(DS3232RTC::ALARM_1);
+        rtc_ds.alarmInterrupt(DS3232RTC::ALARM_1, true);
     } else {
         rtc_pcf.clearAlarm(); // resets the alarm flag in the RTC
         int nextAlarmMinute = rtc_pcf.getMinute();
@@ -111,9 +112,10 @@ void WatchyRTC::_DSConfig(
     }
     // https://github.com/JChristensen/DS3232RTC
     rtc_ds.squareWave(DS3232RTC::SQWAVE_NONE); // disable square wave output
-    rtc_ds.setAlarm(DS3232RTC::ALM2_EVERY_MINUTE, 0, 0, 0,
-                    0); // alarm wakes up Watchy every minute
-    rtc_ds.alarmInterrupt(DS3232RTC::ALARM_2, true); // enable alarm interrupt
+    rtc_ds.setAlarm(DS3232RTC::ALM1_MATCH_DATE, 0, 0, 0, 1);
+    rtc_ds.setAlarm(DS3232RTC::ALM2_MATCH_DATE, 0, 0, 0, 1);
+    rtc_ds.alarm(DS3232RTC::ALARM_1);
+    rtc_ds.alarm(DS3232RTC::ALARM_2);
 }
 
 void WatchyRTC::_PCFConfig(

@@ -58,30 +58,31 @@ void TimeService::updateWatchAlarms() {
         return;
     }
 
-    SERIAL_LOG_D("Still waiting for alarm at ", watchAlarm.next_time.Hour, ":",  watchAlarm.next_time.Minute, " on Day ", watchAlarm.next_time.Day);
+    SERIAL_LOG_D("Still waiting for alarm at ", watchAlarm.next_time.Hour, ":",  watchAlarm.next_time.Minute, ":" , watchAlarm.next_time.Second , " on Day ", watchAlarm.next_time.Day);
 
     // find the next alarm time
     tmElements_t current_time = get_time_formatted();
-    if (matchUpToSeconds(current_time, watchAlarm.next_time)) {
-        triggerAlarm();
-    }
 
     if (isPast(watchAlarm.next_time)) {
         SERIAL_LOG_D("Alarm has passed.");
+        triggerAlarm();
+
         unsigned current_weekday = current_time.Wday;
         bool repeat_set = false;
         for (int i = 1; i < 7; i++) {
-            unsigned next_weekday = (current_weekday + 1 % 7);
+            unsigned next_weekday = (current_weekday + i) % 7;
             if (watchAlarm.repeat_days[next_weekday] == true) {
+                SERIAL_LOG_D("Weekday repeat triggered on week day ", next_weekday);
                 // TODO check for month rollover or directly do computation using time_t
                 watchAlarm.next_time.Day += i;
                 repeat_set = true;
+                break;
             }
         }
 
         watchAlarm.active = repeat_set;
         if (repeat_set) {
-            SERIAL_LOG_D("Reset alarm to ", watchAlarm.next_time.Hour, ":",  watchAlarm.next_time.Minute, " on Day ", watchAlarm.next_time.Day);
+            SERIAL_LOG_D("Reset alarm to ", watchAlarm.next_time.Hour, ":",  watchAlarm.next_time.Minute, ":" , watchAlarm.next_time.Second , " on Day ", watchAlarm.next_time.Day);
         } else {
             SERIAL_LOG_D("No reset time found. Alarm is inactive now.");
         }
@@ -108,7 +109,9 @@ void TimeService::setAlarm(tmElements_t next_time, bool repeat_days[7]) {
     watchAlarm.next_time = next_time;
     memccpy(watchAlarm.repeat_days, repeat_days, 7, sizeof(bool));
     watchAlarm.active = true;
-    SERIAL_LOG_I("Set an alarm at ", watchAlarm.next_time.Hour, ":",  watchAlarm.next_time.Minute, " on Day ", watchAlarm.next_time.Day);
+    SERIAL_LOG_I("Set an alarm at ", watchAlarm.next_time.Hour, ":",  watchAlarm.next_time.Minute, ":" , watchAlarm.next_time.Second , " on Day ", watchAlarm.next_time.Day);
+    SERIAL_LOG_D("Repeat days: ", repeat_days[0], ", ", repeat_days[1], ", ", repeat_days[2], ", ", repeat_days[3], ", ",
+                repeat_days[4], ", ", repeat_days[5], ", ", repeat_days[6]);
 }
 
 void TimeService::stopAlarm() {
@@ -132,9 +135,16 @@ time_t TimeService::timeToAlarm() {
 }
 
 void TimeService::setRtcInterrupt() {
-    if (minuteWake) {
-        SERIAL_LOG_D("Waking at the next minute");
+    if (watchAlarm.active &&
+        (minuteWake && earlier(watchAlarm.next_time, nextMinute())) ||
+            (!minuteWake)) {
+        SERIAL_LOG_D("Setting wakeup to ", watchAlarm.next_time.Hour, ":",  watchAlarm.next_time.Minute, ":" , watchAlarm.next_time.Second, " on Day ", watchAlarm.next_time.Day);
+        RTC.setAlarm(watchAlarm.next_time);
+    } else if (minuteWake) {
+        SERIAL_LOG_D("Setting wakeup to next minute");
         RTC.setAlarmNextMinute();
+    } else {
+        SERIAL_LOG_D("No interrupt set. The watch will sleep until a button is pressed.");
     }
 }
 
@@ -144,6 +154,17 @@ tmElements_t TimeService::nextAlarm() {
    if (watchAlarm.active && !isPast(watchAlarm.next_time)) {
        return watchAlarm.next_time;
    }
+}
+
+tmElements_t TimeService::nextMinute() {
+    /// returns the formatted time of the next full minute
+
+    time_t current_time = get_time_unix();
+    time_t current_plus_minute = current_time + 60;
+    tmElements_t nextMinute;
+    breakTime(current_plus_minute - (current_plus_minute%60), nextMinute);
+
+    return nextMinute;
 }
 
 void TimeService::triggerAlarm() {
