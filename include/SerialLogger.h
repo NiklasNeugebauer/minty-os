@@ -1,6 +1,9 @@
 // Taken and adapted from OswLogger.h which is part of Open-Smartwatch-OS
 // Link: https://github.com/Open-Smartwatch/open-smartwatch-os/blob/master/.github/include/OswLogger.h
 
+#ifndef MINTY_OS_SERIAL_LOGGER_H
+#define MINTY_OS_SERIAL_LOGGER_H
+
 #pragma once
 
 #include <mutex>
@@ -131,3 +134,5 @@ class SerialLogger {
 #ifdef SERIAL_EMULATOR
 #define SERIAL_EMULATOR_THIS_IS_NOT_IMPLEMENTED SERIAL_LOG_W(__FUNCTION__, "() Not implemented!")
 #endif
+
+#endif // MINTY_OS_SERIAL_LOGGER_H
