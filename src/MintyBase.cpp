@@ -49,6 +49,7 @@ void MintyBase::wakeupRoutine() {
         //Wire.begin(SDA, SCL); // init i2c
     }
     SERIAL_LOG_D("Wakeup reason: ", esp_sleep_get_wakeup_cause());
+    ServiceManager::update();
     watch_face = new AppSwitcher();
 }
 
@@ -75,9 +76,7 @@ void MintyBase::initializeDisplay() {
 void MintyBase::deepSleep() {
     SERIAL_LOG_I("Getting sleepy...");
     display.hibernate();
-    SERIAL_LOG_I("1");
     TimeService::setRtcInterrupt();
-    SERIAL_LOG_I("2");
     // Set GPIOs 0-39 to input to avoid power leaking out
     const uint64_t ignore = 0b11110001000000110000100111000010; // Ignore some GPIOs due to resets
     for (int i = 0; i < GPIO_NUM_MAX; i++) {
@@ -85,14 +84,11 @@ void MintyBase::deepSleep() {
             continue;
         pinMode(i, INPUT);
     }
-    SERIAL_LOG_I("3");
     esp_sleep_enable_ext0_wakeup((gpio_num_t)RTC_INT_PIN,
                                  0); // enable deep sleep wake on RTC interrupt
-    SERIAL_LOG_I("4");
     esp_sleep_enable_ext1_wakeup(
             BTN_PIN_MASK,
             ESP_EXT1_WAKEUP_ANY_HIGH); // enable deep sleep wake on button press
-    SERIAL_LOG_I("5");
     if (isFirstStartup) {
         isFirstStartup = false;
     }

@@ -9,11 +9,13 @@
 #include "services/StepService.h"
 #include "services/WifiService.h"
 #include "services/BatteryManager.h"
+#include "services/VibrationService.h"
 
 class ServiceManager {
 public:
     static void init() {
         BatteryManager::init();
+        VibrationService::init();
         TimeService::init();
         StepService::init();
         WifiService::init();
@@ -23,6 +25,7 @@ public:
 
     static void update() {
         BatteryManager::update();
+        VibrationService::update();
         TimeService::update();
         StepService::update();
         WifiService::update();

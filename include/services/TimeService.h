@@ -20,12 +20,21 @@ private:
 
     static bool syncNTP(long gmt, String ntpServer);
     static tmElements_t nextAlarm();
+    static tmElements_t earliest(tmElements_t tm1, tmElements_t tm2);
+    static bool matchUpToSeconds(tmElements_t tm1, tmElements_t tm2);
+    static bool earlier(tmElements_t tm1, tmElements_t tm2);
+    static bool isPast(tmElements_t tm);
+    static void updateWatchAlarms();
+    static void triggerAlarm();
 public:
     static void init();
     static void update();
     static time_t get_time_unix();
     static tmElements_t get_time_formatted();
     static void setAlarm(tmElements_t next_time, bool repeat_days[7]);
+    static WatchAlarm getAlarm();
+    static void stopAlarm();
+    static time_t timeToAlarm();
     static void setRtcInterrupt();
 };
 
