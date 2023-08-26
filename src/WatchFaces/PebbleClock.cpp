@@ -6,23 +6,21 @@
 #include "bitmaps/pebble.h"
 #include "Fonts/FreeMonoBold24pt7b.h"
 #include "Fonts/FreeMonoBold18pt7b.h"
+#include "Fonts/FreeMono9pt7b.h"
 
 #include "services/TimeService.h"
 #include "services/StepService.h"
-
-#include "SerialLogger.h"
+#include "services/BatteryManager.h"
 
 void PebbleClock::handleInput(ActionState actionState) {
 
 }
 
 void PebbleClock::draw(Display *display) {
-    SERIAL_LOG_I("Pebble Draw");
     tmElements_t current_time = TimeService::get_time_formatted();
     long unix_time = makeTime(current_time);
 
     display->setFullWindow();
-    display->fillScreen(GxEPD_BLACK);
     display->drawBitmap(0,0,epd_bitmap_pebbleBackground,200,200,GxEPD_WHITE);
     display->drawBitmap(25,10,epd_bitmap_PebbleCal,50,50,GxEPD_BLACK);
     display->drawBitmap(125,10,epd_bitmap_PebbleStep,50,50,GxEPD_BLACK);
@@ -48,4 +46,9 @@ void PebbleClock::draw(Display *display) {
     uint32_t steps = StepService::get_steps();
     display->setCursor(105, 90);
     display->printf("%04d", steps);
+
+    // BATTERY
+    display->setFont(&FreeMono9pt7b);
+    display->setCursor(90, 195);
+    display->printf("%03d", BatteryManager::getBatteryLevel());
 }
