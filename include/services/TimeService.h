@@ -19,7 +19,7 @@ private:
     static WatchyRTC RTC;
 
     static bool syncNTP(long gmt, String ntpServer);
-    static tmElements_t nextAlarm();
+    static unsigned nextAlarmIndex();
     static tmElements_t earliest(tmElements_t tm1, tmElements_t tm2);
     static bool matchUpToSeconds(tmElements_t tm1, tmElements_t tm2);
     static bool earlier(tmElements_t tm1, tmElements_t tm2);
@@ -27,15 +27,16 @@ private:
     static void updateWatchAlarms();
     static void triggerAlarm();
     static tmElements_t nextMinute();
+    static bool validAlarmIndex(unsigned index);
 public:
     static void init();
     static void update();
     static time_t get_time_unix();
     static tmElements_t get_time_formatted();
-    static void setAlarm(tmElements_t next_time, bool repeat_days[7]);
-    static WatchAlarm getAlarm();
-    static void stopAlarm();
-    static time_t timeToAlarm();
+    static void setAlarm(unsigned alarm_index, tmElements_t next_time, bool repeat_days[7]);
+    static WatchAlarm getAlarm(unsigned alarm_index);
+    static void stopAlarm(unsigned alarm_index);
+    static time_t timeToAlarm(unsigned alarm_index);
     static void setRtcInterrupt();
 };
 

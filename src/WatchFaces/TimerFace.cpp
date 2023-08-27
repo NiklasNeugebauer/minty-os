@@ -11,10 +11,10 @@ RTC_DATA_ATTR unsigned duration_minutes;
 RTC_DATA_ATTR unsigned time_set_index;
 RTC_DATA_ATTR unsigned timer_index;
 
-void TimerFace::draw(GxEPD2_BW<WatchyDisplay, WatchyDisplay::HEIGHT> *display) {
+void drawCountdown(GxEPD2_BW<WatchyDisplay, WatchyDisplay::HEIGHT> *display){
     unsigned display_duration_seconds = 0;
 
-    time_t time_to_alarm = TimeService::timeToAlarm();
+    time_t time_to_alarm = TimeService::timeToAlarm(0);
     bool timer_active = time_to_alarm > 0;
 
     if (timer_active) {
@@ -28,12 +28,6 @@ void TimerFace::draw(GxEPD2_BW<WatchyDisplay, WatchyDisplay::HEIGHT> *display) {
     unsigned minute_part = tmp_rest_duration % 60;
     unsigned hour_part = tmp_rest_duration / 60;
 
-
-    display->setFullWindow();
-    display->fillScreen(GxEPD_BLACK);
-
-    display->setFont(&FreeMonoBold18pt7b);
-    display->setTextColor(GxEPD_WHITE);
     display->setCursor(15, 90);
 
     display->printf("%02d:%02d:%02d", hour_part, minute_part, second_part);
@@ -43,12 +37,27 @@ void TimerFace::draw(GxEPD2_BW<WatchyDisplay, WatchyDisplay::HEIGHT> *display) {
     if (timer_active) {
         display->drawRect(13, 65, 174, 30, GxEPD_WHITE);
     }
+}
 
-    display->printf("\n\n%d", time_set_index);
+void drawAlarm(GxEPD2_BW<WatchyDisplay, WatchyDisplay::HEIGHT> *display) {
+
+    display->setCursor(15, 90);
+}
+
+void TimerFace::draw(GxEPD2_BW<WatchyDisplay, WatchyDisplay::HEIGHT> *display) {
+
+    display->setFullWindow();
+    display->fillScreen(GxEPD_BLACK);
+
+    display->setFont(&FreeMonoBold18pt7b);
+    display->setTextColor(GxEPD_WHITE);
+
+    drawCountdown(display);
+
 }
 
 void TimerFace::handleInput(ActionState actionState) {
-    time_t time_to_alarm_s = TimeService::timeToAlarm();
+    time_t time_to_alarm_s = TimeService::timeToAlarm(0);
     time_t time_to_alarm_min = time_to_alarm_s / 60;
     bool timer_active = time_to_alarm_s > 0;
     bool step_size_min;
@@ -66,7 +75,7 @@ void TimerFace::handleInput(ActionState actionState) {
     } else if (actionState == ActionState(SHORT_PRESS, UNPRESSED, UNPRESSED, UNPRESSED)){
         time_t display_duration;
         if (timer_active) {
-            TimeService::stopAlarm();
+            TimeService::stopAlarm(0);
             display_duration = time_to_alarm_min;
         } else {
             display_duration = duration_minutes;
@@ -76,7 +85,7 @@ void TimerFace::handleInput(ActionState actionState) {
     } else if (actionState == ActionState(UNPRESSED, UNPRESSED, UNPRESSED, SHORT_PRESS)){
         time_t display_duration;
         if (timer_active) {
-            TimeService::stopAlarm();
+            TimeService::stopAlarm(0);
             display_duration = time_to_alarm_min;
         } else {
             display_duration = duration_minutes;
@@ -88,6 +97,6 @@ void TimerFace::handleInput(ActionState actionState) {
         tmElements_t alarmTime;
         breakTime(current_time + duration_minutes * 60, alarmTime);
         bool repeatDays[7] = {false, false, false, false, false, false};
-        TimeService::setAlarm(alarmTime, repeatDays);
+        TimeService::setAlarm(0, alarmTime, repeatDays);
     }
 }
