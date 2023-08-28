@@ -3,6 +3,7 @@
 //
 
 #include "services/StepService.h"
+#include "services/TimeService.h"
 #include "hal/hal.h"
 #include "SerialLogger.h"
 
@@ -112,6 +113,10 @@ void StepService::init() {
 }
 
 void StepService::update() {
+    tmElements_t current_time = TimeService::get_time_formatted();
+    if (current_time.Hour == 0 && current_time.Minute == 0) {
+        resetSteps();
+    }
 }
 
 uint32_t StepService::get_steps() {
