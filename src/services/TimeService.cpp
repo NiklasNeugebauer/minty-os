@@ -47,7 +47,7 @@ time_t TimeService::get_time_unix() {
 
 void TimeService::update() {
     if (needsSync) {
-        syncNTP(GMT_OFFSET_SEC, NTP_SERVER);
+        syncNTP(Config::getGlobalConfig().gmt_offset_sec, NTP_SERVER);
         needsSync = false;
     }
     updateWatchAlarms();
