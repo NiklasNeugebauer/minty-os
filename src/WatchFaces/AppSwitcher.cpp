@@ -6,14 +6,16 @@
 #include "SerialLogger.h"
 #include "WatchFaces/DebugFace.h"
 #include "WatchFaces/PebbleClock.h"
-#include "WatchFaces/BasicTime.h"
+#include "WatchFaces/TimerFace.h"
 
 RTC_DATA_ATTR unsigned FACE_INDEX = 0;
 
 AppSwitcher::AppSwitcher() {
+    // REMEMBER TO CHANGE N_FACES IN AppSwitcher.h !
     faces[0] = new PebbleClock();
     faces[1] = new DebugFace();
-    faces[2] = new BasicTime();
+    faces[2] = new TimerFace();
+    // REMEMBER TO CHANGE N_FACES IN AppSwitcher.h !
 
     fullDraw = false;
 };
@@ -27,7 +29,6 @@ AppSwitcher::~AppSwitcher() {
 void AppSwitcher::draw(GxEPD2_BW<WatchyDisplay, WatchyDisplay::HEIGHT> *display) {
     SERIAL_LOG_D("Handling Draw");
     currentFace()->draw(display);
-    SERIAL_LOG_D("Draw Done.");
 }
 
 void AppSwitcher::handleInput(ActionState actionState) {
