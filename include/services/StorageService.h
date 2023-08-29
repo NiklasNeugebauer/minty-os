@@ -11,6 +11,9 @@ class StorageService : Service{
 public:
     static void init();
     static void update();
+
+    static void saveStepData(unsigned steps);
+    static unsigned loadStepData();
 };
 
 

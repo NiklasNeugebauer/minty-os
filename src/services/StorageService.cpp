@@ -3,6 +3,7 @@
 //
 
 #include "services/StorageService.h"
+#include "services/TimeService.h"
 #include <ArduinoNvs.h>
 #include "hal/hal.h"
 #include "SerialLogger.h"
@@ -36,4 +37,11 @@ void StorageService::init() {
 
 void StorageService::update() {
     NVS.begin();
+}
+
+void StorageService::saveStepData(unsigned int steps) {
+    tmElements_t current_time = TimeService::get_time_formatted();
+
+    NVS.setInt("Steps_" + (String)current_time.Year + "-" + (String)current_time.Month + "-" + current_time.Day
+               , steps);
 }
