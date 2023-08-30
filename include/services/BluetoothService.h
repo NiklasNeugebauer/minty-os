@@ -14,6 +14,8 @@ private:
 public:
     static void init();
     static void update();
+    static void startBluetooth();
+    static void waitForConnection();
 };
 
 #endif // MINTY_OS_WIFISERVICE_H
