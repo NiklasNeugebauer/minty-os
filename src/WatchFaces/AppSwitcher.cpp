@@ -8,7 +8,7 @@
 #include "WatchFaces/PebbleClock.h"
 #include "WatchFaces/BasicTime.h"
 
-RTC_DATA_ATTR unsigned FACE_INDEX = 0;
+RTC_DATA_ATTR unsigned short FACE_INDEX = 0;
 
 AppSwitcher::AppSwitcher() {
     faces[0] = new PebbleClock();
@@ -34,11 +34,14 @@ void AppSwitcher::handleInput(ActionState actionState) {
     SERIAL_LOG_D("Handling Button");
     if (actionState == ActionState(LONG_PRESS, UNPRESSED, UNPRESSED, UNPRESSED)) {
         FACE_INDEX = (FACE_INDEX + 1) % N_FACES;
+        SERIAL_LOG_D("Set face to index '", FACE_INDEX, "'");
         fullDraw = true;
     } else if (actionState == ActionState(UNPRESSED, LONG_PRESS, UNPRESSED, UNPRESSED)) {
-        FACE_INDEX = (FACE_INDEX - 1) % N_FACES;
+        FACE_INDEX = (FACE_INDEX + N_FACES - 1) % N_FACES;
+        SERIAL_LOG_D("Set face to index '", FACE_INDEX, "'");
         fullDraw = true;
     } else {
+        SERIAL_LOG_D("Relaying input to watch face");
         currentFace()->handleInput(actionState);
     }
 }
