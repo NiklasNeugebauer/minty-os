@@ -8,6 +8,7 @@
 #include "services/TimeService.h"
 #include "services/StepService.h"
 #include "services/WifiService.h"
+#include "services/BluetoothService.h"
 #include "services/BatteryManager.h"
 #include "services/VibrationService.h"
 
@@ -19,6 +20,7 @@ public:
         TimeService::init();
         StepService::init();
         WifiService::init();
+        BluetoothService::init();
 
         update();
     }
@@ -29,6 +31,7 @@ public:
         TimeService::update();
         StepService::update();
         WifiService::update();
+        BluetoothService::update();
     }
 };
 
