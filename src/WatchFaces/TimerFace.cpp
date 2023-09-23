@@ -60,12 +60,15 @@ void TimerFace::handleInput(ActionState actionState) {
     time_t time_to_alarm_s = TimeService::timeToAlarm(0);
     time_t time_to_alarm_min = time_to_alarm_s / 60;
     bool timer_active = time_to_alarm_s > 0;
-    bool step_size_min;
+    unsigned step_size_minutes;
     switch (time_set_index) {
-        case 3: step_size_min = 1; break;
-        case 2: step_size_min = 10; break;
-        case 1: step_size_min = 60; break;
-        case 0: step_size_min = 600; break;
+        case 3: step_size_minutes = 1; break;
+        case 2: step_size_minutes = 10; break;
+        case 1: step_size_minutes = 60; break;
+        case 0: step_size_minutes = 600; break;
+        default:
+            step_size_minutes = 1;
+            time_set_index = 3;
     }
 
     if (actionState == ActionState(UNPRESSED, UNPRESSED, SHORT_PRESS, UNPRESSED)) {
@@ -80,8 +83,7 @@ void TimerFace::handleInput(ActionState actionState) {
         } else {
             display_duration = duration_minutes;
         }
-
-        duration_minutes = (display_duration - step_size_min) > 0 ? (display_duration - step_size_min) : 0;
+        duration_minutes = (display_duration - step_size_minutes) > 0 ? (display_duration - step_size_minutes) : 0;
     } else if (actionState == ActionState(UNPRESSED, UNPRESSED, UNPRESSED, SHORT_PRESS)){
         time_t display_duration;
         if (timer_active) {
@@ -91,7 +93,7 @@ void TimerFace::handleInput(ActionState actionState) {
             display_duration = duration_minutes;
         }
 
-        duration_minutes = display_duration + step_size_min;
+        duration_minutes = display_duration + step_size_minutes;
     } else if (actionState == ActionState(UNPRESSED, UNPRESSED, LONG_PRESS, UNPRESSED)){
         time_t current_time = TimeService::get_time_unix();
         tmElements_t alarmTime;
