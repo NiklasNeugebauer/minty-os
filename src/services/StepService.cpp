@@ -9,13 +9,15 @@
 
 RTC_DATA_ATTR BMA423 sensor;
 
-StepService::StepService() {
-
+StepService::StepService()
+{
 }
 
-void StepService::init() {
+void StepService::init()
+{
     SERIAL_LOG_I("Starting StepService...");
-    if (sensor.begin(HAL::readRegister, HAL::writeRegister, delay) == false) {
+    if (sensor.begin(HAL::readRegister, HAL::writeRegister, delay) == false)
+    {
         // fail to init BMA
         SERIAL_LOG_E("Failed to initialize BMA!");
         return;
@@ -64,31 +66,30 @@ void StepService::init() {
         - BMA4_CIC_AVG_MODE
         - BMA4_CONTINUOUS_MODE
     */
-    cfg.perf_mode = BMA4_CONTINUOUS_MODE;
+    cfg.perf_mode = BMA4_CIC_AVG_MODE;
 
     // Configure the BMA423 accelerometer
     sensor.setAccelConfig(cfg);
 
     // Enable BMA423 accelerometer
     // Warning : Need to use feature, you must first enable the accelerometer
-    // Warning : Need to use feature, you must first enable the accelerometer
     sensor.enableAccel();
 
     struct bma4_int_pin_config config;
     config.edge_ctrl = BMA4_LEVEL_TRIGGER;
-    config.lvl       = BMA4_ACTIVE_HIGH;
-    config.od        = BMA4_PUSH_PULL;
+    config.lvl = BMA4_ACTIVE_HIGH;
+    config.od = BMA4_PUSH_PULL;
     config.output_en = BMA4_OUTPUT_ENABLE;
-    config.input_en  = BMA4_INPUT_DISABLE;
+    config.input_en = BMA4_INPUT_DISABLE;
     // The correct trigger interrupt needs to be configured as needed
     sensor.setINTPinConfig(config, BMA4_INTR1_MAP);
 
     struct bma423_axes_remap remap_data;
-    remap_data.x_axis      = 1;
+    remap_data.x_axis = 1;
     remap_data.x_axis_sign = 0xFF;
-    remap_data.y_axis      = 0;
+    remap_data.y_axis = 0;
     remap_data.y_axis_sign = 0xFF;
-    remap_data.z_axis      = 2;
+    remap_data.z_axis = 2;
     remap_data.z_axis_sign = 0xFF;
     // Need to raise the wrist function, need to set the correct axis
     sensor.setRemapAxes(&remap_data);
@@ -112,18 +113,22 @@ void StepService::init() {
     SERIAL_LOG_I("StepService startup successful!");
 }
 
-void StepService::update() {
+void StepService::update()
+{
     tmElements_t current_time = TimeService::get_time_formatted();
-    if (current_time.Hour == 0 && current_time.Minute == 0) {
+    if (current_time.Hour == 0 && current_time.Minute == 0)
+    {
         resetSteps();
     }
 }
 
-uint32_t StepService::get_steps() {
+uint32_t StepService::get_steps()
+{
     uint32_t stepCount = sensor.getCounter();
     return stepCount;
 }
 
-void StepService::resetSteps() {
+void StepService::resetSteps()
+{
     sensor.resetStepCounter();
 }
