@@ -27,12 +27,10 @@ AppSwitcher::~AppSwitcher() {
 }
 
 void AppSwitcher::draw(GxEPD2_BW<WatchyDisplay, WatchyDisplay::HEIGHT> *display) {
-    SERIAL_LOG_D("Handling Draw");
     currentFace()->draw(display);
 }
 
 void AppSwitcher::handleInput(ActionState actionState) {
-    SERIAL_LOG_D("Handling Button");
     if (actionState == ActionState(LONG_PRESS, UNPRESSED, UNPRESSED, UNPRESSED)) {
         FACE_INDEX = (FACE_INDEX + 1) % N_FACES;
         SERIAL_LOG_D("Set face to index '", FACE_INDEX, "'");
@@ -57,4 +55,8 @@ WatchFace* AppSwitcher::currentFace() {
 
 bool AppSwitcher::shouldDrawFull() {
     return fullDraw || currentFace()->shouldDrawFull();
+}
+
+bool AppSwitcher::keepAwake() {
+    return currentFace()->keepAwake();
 }

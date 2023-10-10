@@ -21,7 +21,8 @@ public:
     ~AppSwitcher();
     void draw(Display *display) override;
     void handleInput(ActionState actionState) override;
-    bool shouldDrawFull();
+    bool shouldDrawFull() override;
+    bool keepAwake() override;
 };
 
 
