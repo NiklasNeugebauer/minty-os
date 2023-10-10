@@ -12,14 +12,17 @@
 #include <NTPClient.h>
 #include <WiFiUdp.h>
 
+#include "conf.h"
+
 #define N_ALARMS 4
 
 // TODO consider storing the current time for the current interval for less lookups
 
 WatchyRTC TimeService::RTC;
 RTC_DATA_ATTR bool minuteWake;
-RTC_DATA_ATTR WatchAlarm watchAlarms[N_ALARMS];
-RTC_DATA_ATTR WatchAlarm morningAlarm;
+RTC_DATA_ATTR WatchAlarm watchAlarms[N_ALARMS + 1];
+RTC_DATA_ATTR tmElements_t nightSleepStart;
+RTC_DATA_ATTR tmElements_t nightSleepEnd;
 RTC_DATA_ATTR bool needsSync;
 
 void TimeService::init() {
@@ -28,9 +31,18 @@ void TimeService::init() {
     needsSync = true;
     minuteWake = true;
 
-    morningAlarm.active = true;
+    nightSleepStart.Hour = Config::getGlobalConfig().night_begin_hour;
+    nightSleepStart.Minute = 00;
+    nightSleepStart.Second = 0;
+    nightSleepEnd.Hour = Config::getGlobalConfig().night_end_hour;
+    nightSleepEnd.Minute = 7;
+    nightSleepEnd.Second = 0;
+
+    WatchAlarm* morningAlarm = watchAlarms;
+    morningAlarm->active = true;
     bool full_repeat[7] = {true,true,true,true,true,true,true};
-    memccpy(morningAlarm.repeat_days, full_repeat, 7, sizeof(bool));
+    memccpy(morningAlarm->repeat_days, full_repeat, 7, sizeof(bool));
+    morningAlarm->next_time = nextTimeHourMinute(nightSleepEnd.Hour, nightSleepEnd.Minute);
     // TODO store and load alarm data into NVS
 }
 
@@ -76,8 +88,8 @@ void TimeService::updateWatchAlarms() {
                 unsigned next_weekday = (current_weekday + i) % 7;
                 if (watchAlarm->repeat_days[next_weekday] == true) {
                     SERIAL_LOG_D("Weekday repeat triggered on week day ", next_weekday);
-                    // TODO check for month rollover or directly do computation using time_t
-                    watchAlarm->next_time.Day += i;
+                    time_t past_time_unix = makeTime(watchAlarm->next_time);
+                    breakTime(past_time_unix + i*SECS_PER_DAY, watchAlarm->next_time);
                     repeat_set = true;
                     break;
                 }
@@ -107,6 +119,7 @@ bool TimeService::syncNTP(long gmt, String ntpServer) {
         RTC.set(tm);
         return true;
     }
+    return false;
 }
 
 void TimeService::setAlarm(unsigned alarm_index, tmElements_t next_time, bool repeat_days[7]) {
@@ -145,9 +158,9 @@ time_t TimeService::timeToAlarm(unsigned alarm_index) {
 
 void TimeService::setRtcInterrupt() {
     WatchAlarm next_alarm = watchAlarms[nextAlarmIndex()];
-    if (next_alarm.active &&
-        (minuteWake && earlier(next_alarm.next_time, nextMinute())) ||
-            (!minuteWake)) {
+    if ((next_alarm.active && (minuteWake && earlier(next_alarm.next_time, nextMinute()))) ||
+            (!minuteWake) ||
+            TimeService::isCurrentlyNighttime()) {
         SERIAL_LOG_D("Setting wakeup to ", next_alarm.next_time.Hour, ":",  next_alarm.next_time.Minute, ":" , next_alarm.next_time.Second, " on Day ", next_alarm.next_time.Day);
         RTC.setAlarm(next_alarm.next_time);
     } else if (minuteWake) {
@@ -218,4 +231,27 @@ bool TimeService::isPast(tmElements_t tm) {
 
 bool TimeService::validAlarmIndex(unsigned int index) {
     return index < N_ALARMS;
+}
+
+bool TimeService::isCurrentlyNighttime(){
+    tmElements_t nextNightStart = nextTimeHourMinute(nightSleepStart.Hour, nightSleepStart.Minute);
+    tmElements_t nextNightEnd = nextTimeHourMinute(nightSleepEnd.Hour, nightSleepEnd.Minute);
+    return earlier(nextNightEnd, nextNightStart);
+}
+
+tmElements_t TimeService::nextTimeHourMinute(unsigned hour, unsigned minute) {
+    tmElements_t current_time = get_time_formatted();
+    tmElements_t candidateToday = current_time;
+    tmElements_t nextTime;
+    candidateToday.Hour = hour;
+    candidateToday.Minute = minute;
+    candidateToday.Second = 0;
+    if (isPast(candidateToday)) {
+        time_t candidateTodayUnix = makeTime(candidateToday);
+        breakTime(candidateTodayUnix + SECS_PER_DAY, nextTime);
+    } else {
+        nextTime = candidateToday;
+    } 
+
+    return nextTime;
 }

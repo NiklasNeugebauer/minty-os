@@ -12,6 +12,7 @@
 
 #include "InteractionHandler.h"
 #include "WatchFaces/AppSwitcher.h"
+#include "WatchFaces/Spirograph.h"
 
 #include "bitmaps/mintyOS.h"
 
@@ -49,8 +50,8 @@ void MintyBase::wakeupRoutine() {
         //Wire.begin(SDA, SCL); // init i2c
     }
     SERIAL_LOG_D("Wakeup reason: ", esp_sleep_get_wakeup_cause());
-    ServiceManager::update();
     watch_face = new AppSwitcher();
+    initializeDisplay();
 }
 
 void MintyBase::loop() {
@@ -87,6 +88,10 @@ void MintyBase::initializeDisplay() {
 
 void MintyBase::deepSleep() {
     SERIAL_LOG_I("Getting sleepy...");
+    if (TimeService::isCurrentlyNighttime()) {
+        display.fillScreen(GxEPD_BLACK);
+        display.display(false);
+    }
     display.hibernate();
     TimeService::setRtcInterrupt();
     // Set GPIOs 0-39 to input to avoid power leaking out
@@ -111,15 +116,11 @@ void MintyBase::deepSleep() {
 void MintyBase::handleInput() {
     ActionState action = interactionHandler.getActions();
     SERIAL_LOG_D("Action State: ", action.print());
-    if (action.BACK == LONG_PRESS && action.UP == LONG_PRESS) {
+    if (action.MENU == LONG_PRESS && action.DOWN == LONG_PRESS) {
         reboot();
     } else {
         watch_face->handleInput(action);
     }
-
-    initializeDisplay();
-    watch_face->draw(&display);
-    display.display(!(watch_face->shouldDrawFull() || isFirstStartup));
 }
 
 void MintyBase::displayBusyCallback(const void *) {

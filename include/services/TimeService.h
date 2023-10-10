@@ -28,6 +28,7 @@ private:
     static void triggerAlarm();
     static tmElements_t nextMinute();
     static bool validAlarmIndex(unsigned index);
+    static tmElements_t nextTimeHourMinute(unsigned hour, unsigned minute);
 public:
     static void init();
     static void update();
@@ -38,6 +39,7 @@ public:
     static void stopAlarm(unsigned alarm_index);
     static time_t timeToAlarm(unsigned alarm_index);
     static void setRtcInterrupt();
+    static bool isCurrentlyNighttime();
 };
 
 
