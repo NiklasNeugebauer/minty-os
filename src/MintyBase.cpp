@@ -58,10 +58,22 @@ void MintyBase::loop() {
     interactionHandler.poll();
     if (interactionHandler.finished()) {
         SERIAL_LOG_I("  done.");
+        ServiceManager::update();
+        SERIAL_LOG_D("Handling Button");
         handleInput();
-        deepSleep();
+        if (! watch_face->keepAwake()) {
+            SERIAL_LOG_D("Handling Draw");
+            watch_face->draw(&display);
+            display.display(!(watch_face->shouldDrawFull() || isFirstStartup));
+            SERIAL_LOG_D("  Display refresh done.");
+            deepSleep();
+        } else {
+            interactionHandler.reset();
+        }
+        SERIAL_LOG_I("  Not ready to sleep!");
+    } else {
+        SERIAL_LOG_I("  InteractionHandler busy!");
     }
-    SERIAL_LOG_I("  InteractionHandler busy!");
     delay(50);
 }
 

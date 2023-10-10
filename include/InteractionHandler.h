@@ -64,6 +64,7 @@ public:
     bool finished();
     void poll();
     ActionState getActions();
+    void reset();
 };
 
 

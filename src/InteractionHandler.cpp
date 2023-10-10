@@ -80,3 +80,16 @@ void InteractionHandler::updateAction(ButtonAction &var, unsigned int state) {
         var = SHORT_PRESS;
     }
 }
+
+void InteractionHandler::reset() {
+    // TODO optimize by setting relevant memory to 0
+    actions.MENU = UNPRESSED;
+    actions.BACK = UNPRESSED;
+    actions.UP = UNPRESSED;
+    actions.DOWN = UNPRESSED;
+
+    state.MENU = UNPRESSED;
+    state.BACK = UNPRESSED;
+    state.UP = UNPRESSED;
+    state.DOWN = UNPRESSED;
+}
