@@ -98,7 +98,7 @@ void TimerFace::handleInput(ActionState actionState) {
         time_t current_time = TimeService::get_time_unix();
         tmElements_t alarmTime;
         breakTime(current_time + duration_minutes * 60, alarmTime);
-        bool repeatDays[7] = {false, false, false, false, false, false};
+        std::array<bool, 7> repeatDays = {false, false, false, false, false, false};
         TimeService::setAlarm(0, alarmTime, repeatDays);
     }
 }

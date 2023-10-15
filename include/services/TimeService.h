@@ -5,13 +5,15 @@
 #ifndef MINTY_OS_TIMESERVICE_H
 #define MINTY_OS_TIMESERVICE_H
 
+#include <array>
+
 #include "Service.h"
 #include "hal/WatchyRTC.h"
 
 struct WatchAlarm {
     bool active;
     tmElements_t next_time;
-    bool repeat_days[7];
+    std::array<bool, 7> repeat_days;
 };
 
 class TimeService : Service{
@@ -34,7 +36,7 @@ public:
     static void update();
     static time_t get_time_unix();
     static tmElements_t get_time_formatted();
-    static void setAlarm(unsigned alarm_index, tmElements_t next_time, bool repeat_days[7]);
+    static void setAlarm(unsigned alarm_index, tmElements_t next_time, std::array<bool,7> repeat_days);
     static WatchAlarm getAlarm(unsigned alarm_index);
     static void stopAlarm(unsigned alarm_index);
     static time_t timeToAlarm(unsigned alarm_index);

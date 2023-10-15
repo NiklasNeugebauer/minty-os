@@ -38,11 +38,10 @@ void TimeService::init() {
     nightSleepEnd.Minute = 7;
     nightSleepEnd.Second = 0;
 
-    WatchAlarm* morningAlarm = watchAlarms;
-    morningAlarm->active = true;
-    bool full_repeat[7] = {true,true,true,true,true,true,true};
-    memccpy(morningAlarm->repeat_days, full_repeat, 7, sizeof(bool));
-    morningAlarm->next_time = nextTimeHourMinute(nightSleepEnd.Hour, nightSleepEnd.Minute);
+    // morning alarm
+    std::array<bool, 7> full_repeat = {true,true,true,true,true,true,true};
+    setAlarm(0, nextTimeHourMinute(nightSleepEnd.Hour, nightSleepEnd.Minute), full_repeat);
+
     // TODO store and load alarm data into NVS
 }
 
@@ -122,11 +121,11 @@ bool TimeService::syncNTP(long gmt, String ntpServer) {
     return false;
 }
 
-void TimeService::setAlarm(unsigned alarm_index, tmElements_t next_time, bool repeat_days[7]) {
+void TimeService::setAlarm(unsigned alarm_index, tmElements_t next_time, std::array<bool,7> repeat_days) {
     WatchAlarm *watchAlarm = &watchAlarms[alarm_index];
 
     watchAlarm->next_time = next_time;
-    memccpy(watchAlarm->repeat_days, repeat_days, 7, sizeof(bool));
+    watchAlarm->repeat_days = repeat_days;
     watchAlarm->active = true;
     SERIAL_LOG_I("Set alarm", alarm_index , " at ", watchAlarm->next_time.Hour, ":",  watchAlarm->next_time.Minute, ":" ,
                                                     watchAlarm->next_time.Second , " on Day ", watchAlarm->next_time.Day);
