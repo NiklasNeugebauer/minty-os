@@ -5,6 +5,7 @@
 #include "../include/MintyBase.h"
 
 #include "hal/pins.h"
+#include "conf.h"
 #include "SerialLogger.h"
 #include "ServiceManager.h"
 
@@ -19,6 +20,8 @@
 InteractionHandler interactionHandler;
 
 WatchFace *watch_face;
+
+int active_counter = 0;
 
 //RTC_DATA_ATTR int guiState;
 //RTC_DATA_ATTR int menuIndex;
@@ -55,27 +58,27 @@ void MintyBase::wakeupRoutine() {
 }
 
 void MintyBase::loop() {
-    SERIAL_LOG_I("Loop");
+    SERIAL_LOG_I("Loop | active counter: ", active_counter);
+
+    if (active_counter == 0) {
+        watch_face->draw(&display);
+        display.display(!(watch_face->shouldDrawFull() || isFirstStartup));
+        SERIAL_LOG_D("  Display refresh done.");
+        ServiceManager::update();
+    }
+
+    active_counter++;
     interactionHandler.poll();
     if (interactionHandler.finished()) {
-        SERIAL_LOG_I("  done.");
-        ServiceManager::update();
-        SERIAL_LOG_D("Handling Button");
         handleInput();
-        if (! watch_face->keepAwake()) {
-            SERIAL_LOG_D("Handling Draw");
-            watch_face->draw(&display);
-            display.display(!(watch_face->shouldDrawFull() || isFirstStartup));
-            SERIAL_LOG_D("  Display refresh done.");
-            deepSleep();
-        } else {
+        if (watch_face->keepAwake() || active_counter < SCREEN_ACTIVE_TICKS) {
             interactionHandler.reset();
+        } else {
+            deepSleep();
         }
-        SERIAL_LOG_I("  Not ready to sleep!");
     } else {
-        SERIAL_LOG_I("  InteractionHandler busy!");
     }
-    delay(50);
+    delay(TICK_LENGTH_MS);
 }
 
 void MintyBase::initializeDisplay() {
@@ -115,7 +118,10 @@ void MintyBase::deepSleep() {
 
 void MintyBase::handleInput() {
     ActionState action = interactionHandler.getActions();
-    SERIAL_LOG_D("Action State: ", action.print());
+    if (! (action == ActionState(UNPRESSED, UNPRESSED, UNPRESSED, UNPRESSED))) {
+        SERIAL_LOG_D("Action State: ", action.print());
+        active_counter = 0;
+    }
     if (action.MENU == LONG_PRESS && action.DOWN == LONG_PRESS) {
         reboot();
     } else {
