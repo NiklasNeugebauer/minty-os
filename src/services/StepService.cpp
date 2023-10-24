@@ -4,6 +4,7 @@
 
 #include "services/StepService.h"
 #include "services/TimeService.h"
+#include "conf.h"
 #include "hal/hal.h"
 #include "SerialLogger.h"
 
@@ -116,7 +117,8 @@ void StepService::init()
 void StepService::update()
 {
     tmElements_t current_time = TimeService::get_time_formatted();
-    if (current_time.Hour == 0 && current_time.Minute == 0)
+    if (current_time.Hour == Config::getGlobalConfig().night_end_hour
+        && current_time.Minute == 1)
     {
         resetSteps();
     }
