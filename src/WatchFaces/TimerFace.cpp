@@ -11,10 +11,12 @@ RTC_DATA_ATTR unsigned duration_minutes;
 RTC_DATA_ATTR unsigned time_set_index;
 RTC_DATA_ATTR unsigned timer_index;
 
+#define TIMER_ALARM_INDEX 1
+
 void drawCountdown(GxEPD2_BW<WatchyDisplay, WatchyDisplay::HEIGHT> *display){
     unsigned display_duration_seconds = 0;
 
-    time_t time_to_alarm = TimeService::timeToAlarm(0);
+    time_t time_to_alarm = TimeService::timeToAlarm(TIMER_ALARM_INDEX);
     bool timer_active = time_to_alarm > 0;
 
     if (timer_active) {
@@ -57,7 +59,7 @@ void TimerFace::draw(GxEPD2_BW<WatchyDisplay, WatchyDisplay::HEIGHT> *display) {
 }
 
 void TimerFace::handleInput(ActionState actionState) {
-    time_t time_to_alarm_s = TimeService::timeToAlarm(0);
+    time_t time_to_alarm_s = TimeService::timeToAlarm(TIMER_ALARM_INDEX);
     time_t time_to_alarm_min = time_to_alarm_s / 60;
     bool timer_active = time_to_alarm_s > 0;
     unsigned step_size_minutes;
@@ -78,7 +80,7 @@ void TimerFace::handleInput(ActionState actionState) {
     } else if (actionState == ActionState(SHORT_PRESS, UNPRESSED, UNPRESSED, UNPRESSED)){
         time_t display_duration;
         if (timer_active) {
-            TimeService::stopAlarm(0);
+            TimeService::stopAlarm(TIMER_ALARM_INDEX);
             display_duration = time_to_alarm_min;
         } else {
             display_duration = duration_minutes;
@@ -87,7 +89,7 @@ void TimerFace::handleInput(ActionState actionState) {
     } else if (actionState == ActionState(UNPRESSED, UNPRESSED, UNPRESSED, SHORT_PRESS)){
         time_t display_duration;
         if (timer_active) {
-            TimeService::stopAlarm(0);
+            TimeService::stopAlarm(TIMER_ALARM_INDEX);
             display_duration = time_to_alarm_min;
         } else {
             display_duration = duration_minutes;
@@ -99,6 +101,6 @@ void TimerFace::handleInput(ActionState actionState) {
         tmElements_t alarmTime;
         breakTime(current_time + duration_minutes * 60, alarmTime);
         std::array<bool, 7> repeatDays = {false, false, false, false, false, false};
-        TimeService::setAlarm(0, alarmTime, repeatDays);
+        TimeService::setAlarm(TIMER_ALARM_INDEX, alarmTime, repeatDays);
     }
 }
