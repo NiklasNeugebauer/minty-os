@@ -69,7 +69,7 @@ void DebugFace::handleInput(ActionState actionState) {
     } else if (actionState == ActionState(UNPRESSED, UNPRESSED, LONG_PRESS, UNPRESSED)) {
         NVS.setString("StorageTest", test_strings[string_state].c_str());
         NVS.commit();
-    } else {
+    } else if (!(actionState == ActionState(UNPRESSED, UNPRESSED, UNPRESSED, UNPRESSED))){
         SERIAL_LOG_D("brr");
         VibrationService::vibrateMS(100);
     }
